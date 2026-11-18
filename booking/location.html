@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Select Location with Icon Toggle</title>
+  <style>
+    :root {
+      --spacing: 16px;
+      --radius: 8px;
+      --transition-normal: 0.3s ease;
+
+      /* Light mode colors */
+      --color-bg: #f0f4f8;
+      --color-card-bg: #ffffff;
+      --color-text: #333333;
+      --color-info-bg: #e6f2fa;
+      --color-border: #cccccc;
+      --color-primary: #2a9d8f;
+      --color-primary-hover: #21867a;
+    }
+    [data-theme="dark"] {
+      --color-bg: #1a1a1f;
+      --color-card-bg: #2c2c33;
+      --color-text: #e0e0e7;
+      --color-info-bg: #383840;
+      --color-border: #44444f;
+      --color-primary: #4acbaa;
+      --color-primary-hover: #3db29d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      padding: calc(var(--spacing)*2);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      transition: background var(--transition-normal), color var(--transition-normal);
+    }
+
+    .container {
+      background: var(--color-card-bg);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 480px;
+      padding: calc(var(--spacing)*2);
+      transition: background var(--transition-normal), box-shadow var(--transition-normal);
+    }
+    .info {
+      background: var(--color-info-bg);
+      padding: var(--spacing);
+      border-radius: var(--radius);
+      margin-bottom: var(--spacing);
+      transition: background var(--transition-normal);
+    }
+    label {
+      display: block;
+      margin-bottom: 0.5 * var(--spacing);
+      font-weight: bold;
+    }
+    select {
+      width: 100%;
+      padding: 0.75 * var(--spacing);
+      font-size: 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      margin-bottom: var(--spacing);
+      appearance: none;
+      background: var(--color-card-bg) url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2210%22%20height%3D%226%22%20viewBox%3D%220%200%2010%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M0%200l5%206l5-6z%22%20fill%3D%22%23999%22%20/%3E%3C/svg%3E') no-repeat right 12px center;
+      background-size: 10px 6px;
+      transition: border-color var(--transition-normal), transform var(--transition-normal);
+    }
+    select:hover {
+      transform: scaleY(1.02);
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 4px rgba(42,157,143,0.4);
+    }
+
+    button {
+      width: 100%;
+      padding: var(--spacing);
+      background-color: var(--color-primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+    button:hover,
+    button:focus {
+      background-color: var(--color-primary-hover);
+      animation: bounce 0.3s;
+    }
+    button:active {
+      transform: scale(0.97);
+    }
+    button:disabled {
+      background-color: #777;
+      cursor: not-allowed;
+    }
+
+    /* Icon toggle */
+    .theme-icon {
+      position: absolute;
+      top: var(--spacing);
+      right: var(--spacing);
+      width: 32px;
+      height: 32px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    .theme-icon:hover {
+      transform: scale(1.1);
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.05); }
+      50% { transform: scale(0.98); }
+      70% { transform: scale(1.02); }
+      100% { transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Place your icon (SVG or IMG) here -->
+  <img src="https://uxwing.com/dark-mode-toggle-icon/" alt="Toggle Theme" class="theme-icon" id="themeToggleIcon">
+
+  <div class="container">
+    <h2>Select Your Location</h2>
+    <div class="info" id="userInfo">
+      <!-- injected user info -->
+    </div>
+    <form id="bookingForm" novalidate>
+      <label for="location">Choose Location</label>
+      <select id="location" name="location" required>
+        <option value="" disabled selected>Select a location</option>
+        <option value="New York">New York</option>
+        <option value="London">London</option>
+        <option value="Paris">Paris</option>
+        <option value="Tokyo">Tokyo</option>
+        <option value="Delhi">Delhi</option>
+      </select>
+      <button type="submit">Confirm Booking</button>
+    </form>
+  </div>
+
+  <script>
+    // Initialize theme from storage or default
+    const stored = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', stored);
+
+    const icon = document.getElementById('themeToggleIcon');
+    // You can also change icon's src depending on theme if you have two icons (sun / moon)
+    function updateIcon(theme) {
+      if (theme === 'dark') {
+        // icon.src = 'moon-icon.svg';  // change to your moon icon
+      } else {
+        // icon.src = 'sun-icon.svg';   // change to your sun icon
+      }
+    }
+    updateIcon(stored);
+
+    icon.addEventListener('click', () => {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+      updateIcon(next);
+    });
+
+    // Parse URL params & inject user info
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name') || '';
+    const email = params.get('email') || '';
+    const date = params.get('date') || '';
+    const desc = params.get('description') || '';
+
+    document.getElementById('userInfo').innerHTML = `
+      <strong>Name:</strong> ${name || '-'} <br>
+      <strong>Email:</strong> ${email || '—'} <br>
+      <strong>Travel Date:</strong> ${date || '—'} <br>
+      <strong>Description:</strong> ${desc || 'N/A'}
+    `;
+
+    document.getElementById('bookingForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const loc = document.getElementById('location').value;
+      if (!loc) {
+        alert('Please select a location.');
+        document.getElementById('location').focus();
+        return;
+      }
+      alert(`Thank you${name ? ", " + name : ""}! Your booking for ${loc}${date ? " on " + date : ""} is confirmed.`);
+    });
+  </script>
+
+<script src="../assets/js/db-submit.js"></script>
+</body>
+</html>

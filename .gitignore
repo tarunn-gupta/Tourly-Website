@@ -1,0 +1,14 @@
+
+# Private credentials
+.env
+.env.*
+
+# Log files
+*.log
+
+# Dependencies
+/vendor/
+
+# Local database and setup files
+database.sql
+XAMPP_SETUP.txt

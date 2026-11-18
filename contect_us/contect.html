@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact — Travel Booking</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background:
+        linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+        url(imgg/contactBackPic.avif) no-repeat center center fixed; /* Beautiful travel background from Unsplash (free) */
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .contact-wrap {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 900px; /* Slightly wider for new fields */
+      overflow: hidden;
+      display: flex;
+      flex-wrap: wrap;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.5s ease;
+      opacity: 0;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+    .contact-wrap:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+    }
+    .contact-left, .contact-right {
+      padding: 40px;
+    }
+    .contact-left {
+      flex: 1 1 300px;
+    }
+    .contact-right {
+      flex: 1 1 400px; /* Wider for form */
+      border-left: 1px solid #eee;
+    }
+
+    .contact-left h2 {
+      font-size: 36px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #478fdc, #00C6FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 25px;
+    }
+
+    .contact-left .info {
+      margin-bottom: 20px;
+    }
+    .contact-left .info div {
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+    }
+    .contact-left .info div i {
+      font-size: 20px;
+      width: 28px;
+      color: #007BFF;
+      margin-right: 10px;
+    }
+
+    .social-icons {
+      margin-top: 30px;
+      display: flex;
+      gap: 15px;
+    }
+    .social-icons a {
+      color: #007BFF;
+      font-size: 24px;
+      text-decoration: none;
+      transition: transform 0.2s ease;
+    }
+    .social-icons a:hover {
+      transform: scale(1.2);
+    }
+
+    .contact-form fieldset {
+      border: none;
+      padding: 0;
+    }
+    .contact-form form label {
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .contact-form form input[type="text"],
+    .contact-form form input[type="email"],
+    .contact-form form input[type="tel"],
+    .contact-form form select,
+    .contact-form form textarea {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 20px;
+      border: 2px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      outline: none;
+      box-sizing: border-box;
+    }
+    .contact-form form input:focus,
+    .contact-form form select:focus,
+    .contact-form form textarea:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 8px rgba(0,123,255,0.5);
+    }
+    .contact-form form textarea {
+      resize: vertical;
+      height: 120px;
+    }
+    .contact-form form button {
+      width: 100%;
+      padding: 14px 0;
+      background: linear-gradient(45deg, #596e86, #50769e);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0,123,255,0.4);
+      transition: background 0.4s ease, box-shadow 0.4s, transform 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-form form button:hover:not(:disabled) {
+      background: linear-gradient(45deg, #0056b3, #003d80);
+      box-shadow: 0 10px 25px rgba(0,86,179,0.6);
+      transform: scale(1.05);
+    }
+    .contact-form form button:disabled {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+    .contact-form form button .spinner {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #fff;
+      border-top: 2px solid transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 10px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .contact-form .msg {
+      margin-top: 18px;
+      text-align: center;
+      display: none;
+      font-weight: 700;
+      font-size: 16px;
+      animation: fadeInMsg 0.5s ease;
+    }
+    @keyframes fadeInMsg {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .contact-form .msg.success {
+      color: #28a745;
+    }
+    .contact-form .msg.error {
+      color: #dc3545;
+    }
+    /* Confetti effect on success */
+    .confetti {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      display: none;
+    }
+    .confetti span {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: #ffd700;
+      animation: confettiFall 3s ease-in-out infinite;
+    }
+    @keyframes confettiFall {
+      0% { transform: translateY(-100vh) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    /* Map iframe styling */
+    .map-container {
+      margin-top: 30px;
+      height: 200px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    @media (max-width: 768px) {
+      .contact-wrap {
+        flex-direction: column;
+      }
+      .contact-right {
+        border-left: none;
+        border-top: 1px solid #eee;
+      }
+      .contact-left, .contact-right {
+        padding: 20px;
+      }
+    }
+  </style>
+  <!-- For social icons, we can use font-awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-AvvX2Jm/0aO7mXqk4/KEp7bzHGdC5I3XlK6F2db/9F5H4V1HjD1r2yA3Q5Wtj9q8qKf5Vd1Vz7Oj5t0Rz3K8g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <main>
+    <div class="contact-wrap">
+      <section class="contact-left">
+        <h2>Contact Information</h2>
+        <div class="info">
+          <div><i class="fas fa-map-marker-alt" aria-hidden="true"></i> 123 Travel Lane, City, Country</div>
+          <div><i class="fas fa-phone" aria-hidden="true"></i> +91 7248 6498 13</div>
+          <div><i class="fas fa-envelope" aria-hidden="true"></i> contact@travelbooking.com</div>
+        </div>
+
+        <div class="map-container">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3153.8354345093747!2d-122.41941548468182!3d37.77492977975917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80858064b5c5c5c5%3A0x4a6f9e9e9e9e9e9e!2sSan%20Francisco%2C%20CA!5e0!3m2!1sen!2sus!4v1633020000000!5m2!1sen!2sus"
+            allowfullscreen=""
+            loading="lazy"
+            title="Location Map"
+          ></iframe>
+        </div>
+
+        <div class="social-icons">
+          <a href="https://facebook.com/yourpage" target="_blank" aria-label="Visit our Facebook page"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com/yourprofile" target="_blank" aria-label="Visit our Twitter profile"><i class="fab fa-twitter"></i></a>
+          <a href="https://instagram.com/yourprofile" target="_blank" aria-label="Visit our Instagram profile"><i class="fab fa-instagram"></i></a>
+          <a href="https://linkedin.com/in/yourprofile" target="_blank" aria-label="Visit our LinkedIn profile"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </section>
+
+      <section class="contact-right">
+        <h2>Get in Touch</h2>
+        <div class="contact-form">
+          <form id="contactForm">
+            <fieldset>
+              <label for="name">Name *</label>
+              <input type="text" id="name" name="name" required aria-describedby="nameError" />
+
+              <label for="email">Email *</label>
+              <input type="email" id="email" name="email" required aria-describedby="emailError" />
+
+              <label for="phone">Phone (Optional)</label>
+              <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" placeholder="e.g., 7248649813" />
+
+              <label for="subject">Subject *</label>
+              <select id="subject" name="subject" required>
+                <option value="">Select an option</option>
+                <option value="booking">Booking Inquiry</option>
+                <option value="general">General Question</option>
+                <option value="support">Support</option>
+                <option value="feedback">Feedback</option>
+              </select>
+
+              <label for="message">Your message *</label>
+              <textarea id="message" name="message" required aria-describedby="messageError"></textarea>
+
+              <button type="submit" id="submitBtn" aria-label="Send your message">
+                <span class="spinner" id="spinner"></span>
+                <span id="btnText">Send Message</span>
+              </button>
+            </fieldset>
+
+            <div class="msg success" id="successMessage">Thank you! We'll get back to you soon.</div>
+            <div class="msg error" id="errorMessage">Oops! Something went wrong.</div>
+            <div class="confetti" id="confetti"></div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      const form = document.getElementById('contactForm');
+      const successMsg = document.getElementById('successMessage');
+      const errorMsg = document.getElementById('errorMessage');
+      const submitBtn = document.getElementById('submitBtn');
+      const spinner = document.getElementById('spinner');
+      const btnText = document.getElementById('btnText');
+      const confetti = document.getElementById('confetti');
+
+      // Helper to sanitize input
+      const sanitize = (str) => str.replace(/[<>]/g, '');
+
+      // Email validation
+      const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+      // Phone validation (basic 10-digit)
+      const isValidPhone = (phone) => phone === '' || /^\d{10}$/.test(phone);
+
+      // Simulate confetti
+      function showConfetti() {
+        confetti.style.display = 'block';
+        for (let i = 0; i < 50; i++) {
+          const piece = document.createElement('span');
+          piece.style.left = Math.random() * 100 + '%';
+          piece.style.animationDelay = Math.random() * 3 + 's';
+          confetti.appendChild(piece);
+        }
+        setTimeout(() => {
+          confetti.style.display = 'none';
+          confetti.innerHTML = '';
+        }, 3000);
+      }
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        successMsg.style.display = 'none';
+        errorMsg.style.display = 'none';
+
+        const name = sanitize(form.name.value.trim());
+        const email = sanitize(form.email.value.trim());
+        const phone = sanitize(form.phone.value.trim());
+        const subject = form.subject.value;
+        const message = sanitize(form.message.value.trim());
+
+        // Validation
+        if (!name) {
+          errorMsg.textContent = 'Please enter your name.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        if (!email || !isValidEmail(email)) {
+          errorMsg.textContent = 'Please enter a valid email address.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        if (!isValidPhone(phone)) {
+          errorMsg.textContent = 'Please enter a valid 10-digit phone number.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        if (!subject) {
+          errorMsg.textContent = 'Please select a subject.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+        if (!message) {
+          errorMsg.textContent = 'Please enter your message.';
+          errorMsg.style.display = 'block';
+          return;
+        }
+
+        // Show loading
+        submitBtn.disabled = true;
+        spinner.style.display = 'inline-block';
+        btnText.textContent = 'Sending...';
+
+        try {
+          // Simulate success (replace with real fetch if backend available)
+          await new Promise(resolve => setTimeout(resolve, 2000)); // 2-second delay for demo
+          successMsg.style.display = 'block';
+          showConfetti(); // Fun effect
+          form.reset();
+        } catch (err) {
+          console.error('Error:', err);
+          errorMsg.textContent = 'Sorry! Could not send message.';
+          errorMsg.style.display = 'block';
+        } finally {
+          submitBtn.disabled = false;
+          spinner.style.display = 'none';
+          btnText.textContent = 'Send Message';
+        }
+      });
+    })();
+  </script>
+
+<script src="../assets/js/db-submit.js"></script>
+</body>
+</html>

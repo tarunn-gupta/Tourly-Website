@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Inquiry Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: -1;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 550px;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .header:hover::before {
+            left: 100%;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #2d3436;
+            transition: color 0.3s ease;
+        }
+
+        .form-group:hover label {
+            color: #667eea;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+            background: white;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .region-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .region-btn {
+            padding: 10px 20px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            background: white;
+            color: #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .region-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .region-btn:hover {
+            background: #5a67d8;
+            color: white;
+        }
+
+        .destination-section {
+            display: block;
+        }
+
+        .destination-section.hidden {
+            display: none;
+        }
+
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .destination-option {
+            padding: 10px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            background: white;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .destination-option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+
+        .destination-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .error.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Scrollable container for destinations */
+        .scroll-container {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            padding: 15px;
+            background: white;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                background-attachment: scroll;
+            }
+            
+            .container {
+                margin: 10px;
+                backdrop-filter: blur(5px);
+                max-width: 100%;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+
+            .destination-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            input:hover, select:hover, textarea:hover {
+                transform: none;
+            }
+
+            .region-selector {
+                flex-direction: column;
+            }
+
+            .region-btn {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>✈️ Travel Inquiry</h1>
+            <p>Provide your travel details and we’ll get back to you soon.</p>
+        </div>
+        
+        <div class="form-container">
+            <form id="inquiryForm">
+                <div class="form-group">
+                    <label for="name">Full Name *</label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name">
+                    <div class="error" id="nameError">Please enter your name</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" name="email" placeholder="your@email.com">
+                    <div class="error" id="emailError">Please enter a valid email address</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+91 9876543210">
+                    <div class="error" id="phoneError">Please enter a valid phone number</div>
+                </div>
+    
+                <div class="form-group">
+                    <label>Select Travel Region *</label>
+                    <div class="region-selector">
+                        <button type="button" class="region-btn active" data-region="india">India</button>
+                        <button type="button" class="region-btn" data-region="international">International</button>
+                    </div>
+                </div>
+    
+                <!-- Indian Destinations -->
+                <div class="form-group destination-section" id="india-destinations">
+                    <label>Destinations in India *</label>
+                    <div class="scroll-container">
+                        <div class="destination-grid">
+                            <div class="destination-option" data-value="goa">Goa</div>
+                            <div class="destination-option" data-value="kerala">Kerala</div>
+                            <div class="destination-option" data-value="rajasthan">Rajasthan</div>
+                            <div class="destination-option" data-value="himachal">Himachal</div>
+                            <div class="destination-option" data-value="uttarakhand">Uttarakhand</div>
+                            <div class="destination-option" data-value="kashmir">Kashmir</div>
+                            <div class="destination-option" data-value="sikkim">Sikkim</div>
+                            <div class="destination-option" data-value="assam">Assam</div>
+                            <div class="destination-option" data-value="meghalaya">Meghalaya</div>
+                            <div class="destination-option" data-value="tamilnadu">Tamil Nadu</div>
+                            <div class="destination-option" data-value="karnataka">Karnataka</div>
+                            <div class="destination-option" data-value="maharashtra">Maharashtra</div>
+                            <div class="destination-option" data-value="gujarat">Gujarat</div>
+                            <div class="destination-option" data-value="madhya-pradesh">Madhya Pradesh</div>
+                            <div class="destination-option" data-value="west-bengal">West Bengal</div>
+                            <div class="destination-option" data-value="andaman">Andaman</div>
+                            <div class="destination-option" data-value="lakshadweep">Lakshadweep</div>
+                            <div class="destination-option" data-value="punjab">Punjab</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="indiaDestination" name="indiaDestination">
+                    <div class="error" id="indiaDestinationError">Please select a destination</div>
+                </div>
+    
+                <!-- International Destinations -->
+                <div class="form-group destination-section hidden" id="international-destinations">
+                    <label>International Destinations *</label>
+                    <div class="scroll-container">
+                        <div class="destination-grid">
+                            <div class="destination-option" data-value="thailand">Thailand</div>
+                            <div class="destination-option" data-value="bali">Bali</div>
+                            <div class="destination-option" data-value="singapore">Singapore</div>
+                            <div class="destination-option" data-value="malaysia">Malaysia</div>
+                            <div class="destination-option" data-value="dubai">Dubai</div>
+                            <div class="destination-option" data-value="turkey">Turkey</div>
+                            <div class="destination-option" data-value="greece">Greece</div>
+                            <div class="destination-option" data-value="italy">Italy</div>
+                            <div class="destination-option" data-value="france">France</div>
+                            <div class="destination-option" data-value="spain">Spain</div>
+                            <div class="destination-option" data-value="uk">UK</div>
+                            <div class="destination-option" data-value="usa">USA</div>
+                            <div class="destination-option" data-value="canada">Canada</div>
+                            <div class="destination-option" data-value="australia">Australia</div>
+                            <div class="destination-option" data-value="newzealand">New Zealand</div>
+                            <div class="destination-option" data-value="japan">Japan</div>
+                            <div class="destination-option" data-value="southkorea">South Korea</div>
+                            <div class="destination-option" data-value="china">China</div>
+                            <div class="destination-option" data-value="maldives">Maldives</div>
+                            <div class="destination-option" data-value="mauritius">Mauritius</div>
+                            <div class="destination-option" data-value="srilanka">Sri Lanka</div>
+                            <div class="destination-option" data-value="nepal">Nepal</div>
+                            <div class="destination-option" data-value="bhutan">Bhutan</div>
+                            <div class="destination-option" data-value="vietnam">Vietnam</div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="internationalDestination" name="internationalDestination">
+                    <div class="error" id="internationalDestinationError">Please select a destination</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="travelDate">Travel Date *</label>
+                    <input type="date" id="travelDate" name="travelDate">
+                    <div class="error" id="dateError">Please select a travel date</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="travelers">Number of Travelers *</label>
+                    <select id="travelers" name="travelers">
+                        <option value="">Select Number</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7+">7+</option>
+                    </select>
+                    <div class="error" id="travelersError">Please select number of travelers</div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="budget">Estimated Budget (Per Person)</label>
+                    <select id="budget" name="budget">
+                        <option value="">Select Budget</option>
+                        <option value="10000">Up to ₹10,000</option>
+                        <option value="20000">₹10,000 - ₹20,000</option>
+                        <option value="30000">₹20,000 - ₹30,000</option>
+                        <option value="50000">₹30,000 - ₹50,000</option>
+                        <option value="100000">₹50,000 - ₹1,00,000</option>
+                        <option value="100000+">Above ₹1,00,000</option>
+                    </select>
+                </div>
+    
+                <div class="form-group">
+                    <label for="message">Additional Information</label>
+                    <textarea id="message" name="message" placeholder="Any special requirements or information about your trip..."></textarea>
+                </div>
+    
+                <button type="submit" class="btn">Submit Inquiry</button>
+            </form>
+    
+            <div class="success-message" id="successMessage">
+                <h3>Thank You! 🎉</h3>
+                <p>Your inquiry has been submitted successfully. We will contact you soon.</p>
+            </div>
+        </div>
+    </div>
+    
+
+<script src="../assets/js/db-submit.js"></script>
+</body>
+   
+
+    <script>
+        // Region selector functionality
+        const regionButtons = document.querySelectorAll('.region-btn');
+        const destinationSections = document.querySelectorAll('.destination-section');
+        
+        regionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons
+                regionButtons.forEach(btn => btn.classList.remove('active'));
+                
+                // Add active class to clicked button
+                button.classList.add('active');
+                
+                // Show corresponding destination section
+                const region = button.getAttribute('data-region');
+                destinationSections.forEach(section => {
+                    if (section.id === `${region}-destinations`) {
+                        section.classList.remove('hidden');
+                    } else {
+                        section.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Destination selection functionality
+        const destinationOptions = document.querySelectorAll('.destination-option');
+        
+        destinationOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                // Remove selected class from all options in the same section
+                const parentSection = option.closest('.destination-section');
+                parentSection.querySelectorAll('.destination-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected class to clicked option
+                option.classList.add('selected');
+                
+                // Update hidden input value
+                const hiddenInput = parentSection.querySelector('input[type="hidden"]');
+                hiddenInput.value = option.getAttribute('data-value');
+            });
+        });
+
+        // Form submission
+        document.getElementById('inquiryForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset errors
+            document.querySelectorAll('.error').forEach(error => {
+                error.classList.remove('show');
+            });
+
+            let isValid = true;
+
+            // Validate name
+            const name = document.getElementById('name').value.trim();
+            if (!name) {
+                document.getElementById('nameError').classList.add('show');
+                isValid = false;
+            }
+
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!email || !emailRegex.test(email)) {
+                document.getElementById('emailError').classList.add('show');
+                isValid = false;
+            }
+
+            // Validate phone
+            const phone = document.getElementById('phone').value.trim();
+            const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+            if (!phone || !phoneRegex.test(phone)) {
+                document.getElementById('phoneError').classList.add('show');
+                isValid = false;
+            }
+
+            // Validate destination based on selected region
+            const activeRegion = document.querySelector('.region-btn.active').getAttribute('data-region');
+            if (activeRegion === 'india') {
+                const indiaDestination = document.getElementById('indiaDestination').value;
+                if (!indiaDestination) {
+                    document.getElementById('indiaDestinationError').classList.add('show');
+                    isValid = false;
+                }
+            } else {
+                const internationalDestination = document.getElementById('internationalDestination').value;
+                if (!internationalDestination) {
+                    document.getElementById('internationalDestinationError').classList.add('show');
+                    isValid = false;
+                }
+            }
+
+            // Validate travel date
+            const travelDate = document.getElementById('travelDate').value;
+            if (!travelDate) {
+                document.getElementById('dateError').classList.add('show');
+                isValid = false;
+            }
+
+            // Validate travelers
+            const travelers = document.getElementById('travelers').value;
+            if (!travelers) {
+                document.getElementById('travelersError').classList.add('show');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Form is valid - show success message
+                document.getElementById('successMessage').classList.add('show');
+                document.getElementById('inquiryForm').reset();
+                
+                // Clear selected destinations
+                document.querySelectorAll('.destination-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Reset hidden inputs
+                document.getElementById('indiaDestination').value = '';
+                document.getElementById('internationalDestination').value = '';
+                
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    document.getElementById('successMessage').classList.remove('show');
+                }, 5000);
+            }
+        });
+
+        // Set minimum date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('travelDate').min = today;
+    </script>
+
+<script src="../assets/js/db-submit.js"></script>
+</body>
+</html>
